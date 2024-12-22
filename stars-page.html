@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rate Your Experience</title>
 
-  <!-- Firebase CDN Scripts -->
+  <!-- Firebase CDN -->
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
 
@@ -63,25 +63,14 @@
       authDomain: "review-logging-cbecd.firebaseapp.com",
       databaseURL: "https://review-logging-cbecd-default-rtdb.firebaseio.com",
       projectId: "review-logging-cbecd",
-      storageBucket: "review-logging-cbecd.firebasestorage.app",
+      storageBucket: "review-logging-cbecd.appspot.com",
       messagingSenderId: "159382094438",
       appId: "1:159382094438:web:7ab0e64549901c604363a7"
     };
-//test firebase
-function testFirebase() {
-  database.ref("test").push({
-    test: "Firebase connection works!",
-    timestamp: new Date().toISOString()
-  }).then(() => {
-    alert("Test entry successfully logged in Firebase!");
-  }).catch(error => {
-    alert("Error connecting to Firebase. Check the console for details.");
-    console.error(error);
-  });
-}
+
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
 
     // Star Selection
     let selectedStars = 0;
@@ -121,6 +110,18 @@ function testFirebase() {
         }
       }).catch(error => {
         alert("Error logging review. Please try again later.");
+        console.error(error);
+      });
+    }
+
+    function testFirebase() {
+      database.ref("test").push({
+        test: "Firebase connection works!",
+        timestamp: new Date().toISOString()
+      }).then(() => {
+        alert("Test entry successfully logged in Firebase!");
+      }).catch(error => {
+        alert("Error connecting to Firebase. Check the console for details.");
         console.error(error);
       });
     }
