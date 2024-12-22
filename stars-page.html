@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rate Your Experience</title>
+
   <!-- Firebase CDN Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
@@ -68,11 +69,11 @@
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     // Star Selection
-    let selectedStars = 0; // Ensure variable is accessible
+    let selectedStars = 0;
 
     function highlightStars(starIndex) {
       const stars = document.querySelectorAll('.star');
