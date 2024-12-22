@@ -2,6 +2,8 @@
 <html>
 <head>
   <title>Thank You</title>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #f5e6d3; padding: 20px; }
     img { width: 200px; height: 200px; margin-bottom: 20px; }
@@ -14,5 +16,33 @@
   <h2>Thank You for Your Feedback</h2>
   <p>Would you mind sharing your experience publicly?</p>
   <a href="https://g.page/r/Cc8JVllw4qR-EBM/review" class="review-button">Review us on Google</a>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
+      authDomain: "review-logging-cbecd.firebaseapp.com",
+      databaseURL: "https://review-logging-cbecd-default-rtdb.firebaseio.com",
+      projectId: "review-logging-cbecd",
+      storageBucket: "review-logging-cbecd.firebasestorage.app",
+      messagingSenderId: "159382094438",
+      appId: "1:159382094438:web:7ab0e64549901c604363a7"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Log the event
+    const params = new URLSearchParams(window.location.search);
+    const employee = params.get("employee") || "Unknown";
+    const stars = params.get("stars") || "Unknown";
+
+    database.ref("reviews").push({
+      employee,
+      stars,
+      timestamp: new Date().toISOString()
+    });
+  </script>
 </body>
 </html>
