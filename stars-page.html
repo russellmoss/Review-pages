@@ -67,7 +67,18 @@
       messagingSenderId: "159382094438",
       appId: "1:159382094438:web:7ab0e64549901c604363a7"
     };
-
+//test firebase
+function testFirebase() {
+  database.ref("test").push({
+    test: "Firebase connection works!",
+    timestamp: new Date().toISOString()
+  }).then(() => {
+    alert("Test entry successfully logged in Firebase!");
+  }).catch(error => {
+    alert("Error connecting to Firebase. Check the console for details.");
+    console.error(error);
+  });
+}
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
@@ -126,5 +137,6 @@
     <span class="star" onclick="highlightStars(5)">★</span>
   </div>
   <button class="submit-button" onclick="submitRating()">Submit</button>
+  <button onclick="testFirebase()">Test Firebase</button>
 </body>
 </html>
