@@ -111,14 +111,17 @@
         employee,
         stars: selectedStars,
         timestamp: new Date().toISOString()
+      }).then(() => {
+        // Redirect based on rating
+        if (selectedStars <= 3) {
+          window.location.href = "https://russellmoss.github.io/Review-pages/feedback-page.html?employee=" + encodeURIComponent(employee) + "&stars=" + selectedStars;
+        } else {
+          window.location.href = "https://russellmoss.github.io/Review-pages/thank-you-page.html?employee=" + encodeURIComponent(employee) + "&stars=" + selectedStars;
+        }
+      }).catch(error => {
+        alert("Error logging review. Please try again later.");
+        console.error(error);
       });
-
-      // Redirect based on rating
-      if (selectedStars <= 3) {
-        window.location.href = "https://russellmoss.github.io/Review-pages/feedback-page.html?employee=" + encodeURIComponent(employee) + "&stars=" + selectedStars;
-      } else {
-        window.location.href = "https://russellmoss.github.io/Review-pages/thank-you-page.html?employee=" + encodeURIComponent(employee) + "&stars=" + selectedStars;
-      }
     }
   </script>
 </body>
