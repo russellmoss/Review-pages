@@ -5,7 +5,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
   <script>
-    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
       authDomain: "review-logging-cbecd.firebaseapp.com",
@@ -16,20 +15,32 @@
       appId: "1:159382094438:web:7ab0e64549901c604363a7"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    function logStars(employee, stars) {
-      database.ref("stars").push({
+    let selectedStars = 0;
+
+    function highlightStars(starIndex) {
+      const stars = document.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        star.classList.toggle('filled', index < starIndex);
+      });
+      selectedStars = starIndex;
+    }
+
+    function submitRating() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const employee = urlParams.get('employee') || 'Unknown';
+
+      database.ref('stars').push({
         employee,
-        stars,
+        stars: selectedStars,
         timestamp: new Date().toISOString()
       });
 
-      const redirectUrl = stars <= 3 
-        ? `https://russellmoss.github.io/Review-pages/feedback-page.html?employee=${employee}&stars=${stars}`
-        : `https://russellmoss.github.io/Review-pages/thank-you-page.html?employee=${employee}&stars=${stars}`;
+      const redirectUrl = selectedStars <= 3 
+        ? `https://russellmoss.github.io/Review-pages/feedback-page.html?employee=${employee}&stars=${selectedStars}`
+        : `https://russellmoss.github.io/Review-pages/thank-you-page.html?employee=${employee}&stars=${selectedStars}`;
       
       window.location.href = redirectUrl;
     }
@@ -47,6 +58,13 @@
 <body>
   <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo">
   <h2>Rate Your Experience</h2>
-  <div class="stars" onclick="logStars('Kaiya', 4)"> ★★★★☆ </div>
+  <div class="stars">
+    <span class="star" onclick="highlightStars(1)">★</span>
+    <span class="star" onclick="highlightStars(2)">★</span>
+    <span class="star" onclick="highlightStars(3)">★</span>
+    <span class="star" onclick="highlightStars(4)">★</span>
+    <span class="star" onclick="highlightStars(5)">★</span>
+  </div>
+  <button class="submit-button" onclick="submitRating()">Submit</button>
 </body>
 </html>
