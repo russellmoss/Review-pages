@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Feedback Page</title>
+  <title>Feedback Form</title>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
   <script>
@@ -20,14 +20,14 @@
 
     function submitFeedback() {
       const urlParams = new URLSearchParams(window.location.search);
-      const employee = urlParams.get("employee") || "Unknown";
-      const stars = urlParams.get("stars") || "Unknown";
+      const employee = urlParams.get('employee') || 'Unknown';
+      const stars = urlParams.get('stars') || 'Unknown';
 
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const comment = document.getElementById("comment").value;
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const comment = document.getElementById('comment').value;
 
-      database.ref("feedback").push({
+      database.ref('feedback').push({
         employee,
         stars,
         name,
@@ -37,7 +37,6 @@
       });
 
       alert("Thank you for your feedback!");
-      window.location.href = "https://russellmoss.github.io/Review-pages/thank-you-page.html";
     }
   </script>
   <style>
@@ -51,7 +50,6 @@
 <body>
   <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo">
   <h1>Feedback</h1>
-  <p>Let us know your thoughts below:</p>
   <form onsubmit="event.preventDefault(); submitFeedback();">
     <input type="text" id="name" placeholder="Your Name" required>
     <input type="email" id="email" placeholder="Your Email" required>
