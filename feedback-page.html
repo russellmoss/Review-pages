@@ -2,8 +2,62 @@
 <html>
   <head>
     <title>Feedback Page</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script>
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
+        authDomain: "review-logging-cbecd.firebaseapp.com",
+        databaseURL: "https://review-logging-cbecd-default-rtdb.firebaseio.com",
+        projectId: "review-logging-cbecd",
+        storageBucket: "review-logging-cbecd.appspot.com",
+        messagingSenderId: "159382094438",
+        appId: "1:159382094438:web:7ab0e64549901c604363a7"
+      };
+
+      // Initialize Firebase
+      let database;
+      window.onload = () => {
+        const app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log("Firebase initialized.");
+      };
+
+      // Submit feedback
+      function submitFeedback(employee, stars) {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const comment = document.getElementById("comment").value;
+
+        if (!name || !email || !comment) {
+          alert("Please fill out all fields.");
+          return;
+        }
+
+        // Log to Firebase
+        const feedbackEntry = {
+          employee: employee,
+          stars: stars,
+          timestamp: new Date().toISOString(),
+          name: name,
+          email: email,
+          comment: comment,
+        };
+
+        database
+          .ref("feedback")
+          .push(feedbackEntry)
+          .then(() => {
+            alert("Thank you for your feedback!");
+          })
+          .catch((error) => {
+            console.error("Error submitting feedback:", error);
+            alert("Failed to submit your feedback. Please try again.");
+          });
+      }
+    </script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -16,86 +70,43 @@
         height: 200px;
         margin-bottom: 20px;
       }
-      input,
-      textarea {
-        display: block;
+      h2 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      textarea,
+      input {
         width: 80%;
-        margin: 10px auto;
+        margin: 10px 0;
         padding: 10px;
         font-size: 16px;
       }
       .submit-button {
-        display: inline-block;
         padding: 15px 30px;
         font-size: 18px;
         color: white;
-        background-color: #c4a484; /* Beige button */
-        text-decoration: none;
+        background-color: #c4a484;
         border-radius: 25px;
         border: none;
         cursor: pointer;
         margin-top: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
       }
       .submit-button:hover {
         background-color: #b59476;
       }
     </style>
-    <script>
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
-        authDomain: "review-logging-cbecd.firebaseapp.com",
-        databaseURL: "https://review-logging-cbecd-default-rtdb.firebaseio.com",
-        projectId: "review-logging-cbecd",
-        storageBucket: "review-logging-cbecd.appspot.com",
-        messagingSenderId: "159382094438",
-        appId: "1:159382094438:web:7ab0e64549901c604363a7"
-      };
-
-      // Initialize Firebase
-      const app = firebase.initializeApp(firebaseConfig);
-      const database = firebase.database(app);
-
-      // Function to submit feedback
-      function submitFeedback() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const employee = urlParams.get("employee") || "Unknown";
-        const stars = urlParams.get("stars") || "Unknown";
-
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const comment = document.getElementById("comment").value;
-
-        if (!name || !email || !comment) {
-          alert("Please fill out all fields before submitting.");
-          return;
-        }
-
-        // Save feedback to Firebase
-        const feedbackRef = database.ref("feedback");
-        feedbackRef.push({
-          employee: employee,
-          stars: stars,
-          name: name,
-          email: email,
-          comment: comment,
-          timestamp: new Date().toISOString()
-        });
-
-        alert("Thank you for your feedback!");
-        window.location.href = "https://russellmoss.github.io/Review-pages/feedback-thank-you.html";
-      }
-    </script>
   </head>
   <body>
-    <img src="https://i.imgur.com/qfTW5j0.png" alt="Milea Estate Vineyard Logo">
+    <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo" />
     <h2>Thank you for your feedback!</h2>
     <p>Please let us know about your experience below.</p>
-    <input id="name" type="text" placeholder="Your Name">
-    <input id="email" type="email" placeholder="Your Email">
-    <textarea id="comment" placeholder="Your Comments"></textarea>
-    <button class="submit-button" onclick="submitFeedback()">Submit</button>
+    <form onsubmit="event.preventDefault(); submitFeedback('Kaiya', 2);">
+      <input id="name" type="text" placeholder="Your Name" required />
+      <input id="email" type="email" placeholder="Your Email" required />
+      <textarea id="comment" placeholder="Your Comments" required></textarea>
+      <button type="submit" class="submit-button">Submit</button>
+    </form>
   </body>
 </html>
