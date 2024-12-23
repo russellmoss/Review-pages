@@ -75,15 +75,6 @@
             alert("Failed to submit your rating. Please try again.");
           });
       }
-
-      // Test Firebase connection
-      function testFirebase() {
-        database
-          .ref('test')
-          .push({ message: 'Firebase connection test', timestamp: new Date().toISOString() })
-          .then(() => alert("Firebase connection is working!"))
-          .catch((error) => console.error("Firebase connection test failed:", error));
-      }
     </script>
     <style>
       body {
@@ -130,20 +121,6 @@
       .submit-button:hover {
         background-color: #b59476;
       }
-      .test-button {
-        padding: 10px 20px;
-        font-size: 14px;
-        color: white;
-        background-color: #4285f4;
-        border-radius: 15px;
-        border: none;
-        cursor: pointer;
-        margin-top: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      }
-      .test-button:hover {
-        background-color: #357ae8;
-      }
     </style>
   </head>
   <body>
@@ -157,7 +134,5 @@
       <span class="star" onclick="highlightStars(5)">★</span>
     </div>
     <button class="submit-button" onclick="submitRating('Kaiya')">Submit</button>
-    <br />
-    <button class="test-button" onclick="testFirebase()">Test Firebase</button>
   </body>
 </html>
