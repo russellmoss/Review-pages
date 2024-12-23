@@ -20,41 +20,57 @@
       // Initialize Firebase
       let database;
       window.onload = () => {
-        const app = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("Firebase initialized.");
+        try {
+          const app = firebase.initializeApp(firebaseConfig);
+          database = firebase.database();
+          console.log("Firebase initialized.");
+
+          // Retrieve the employee and stars parameters from the URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const employee = urlParams.get("employee") || "Unknown";
+          const stars = urlParams.get("stars") || "Unknown";
+
+          // Populate hidden fields to carry forward employee and stars information
+          document.getElementById("employee").value = employee;
+          document.getElementById("stars").value = stars;
+        } catch (error) {
+          console.error("Firebase initialization error:", error);
+        }
       };
 
-      // Submit feedback
-      function submitFeedback(employee, stars) {
+      function submitFeedback() {
+        // Retrieve form data
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const comment = document.getElementById("comment").value;
+        const employee = document.getElementById("employee").value;
+        const stars = document.getElementById("stars").value;
 
         if (!name || !email || !comment) {
           alert("Please fill out all fields.");
           return;
         }
 
-        // Log to Firebase
+        // Create feedback entry
         const feedbackEntry = {
-          employee: employee,
-          stars: stars,
-          timestamp: new Date().toISOString(),
           name: name,
           email: email,
           comment: comment,
+          employee: employee,
+          stars: stars,
+          timestamp: new Date().toISOString()
         };
 
+        // Log feedback in Firebase
         database
           .ref("feedback")
           .push(feedbackEntry)
           .then(() => {
             alert("Thank you for your feedback!");
+            // Optionally redirect to a confirmation page
           })
           .catch((error) => {
-            console.error("Error submitting feedback:", error);
-            alert("Failed to submit your feedback. Please try again.");
+            console.error("Error logging feedback to Firebase:", error);
           });
       }
     </script>
@@ -62,7 +78,8 @@
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        background-color: #f5e6d3; /* Beige background */
+        background-color: #f5e6d3;
+        margin: 0;
         padding: 20px;
       }
       img {
@@ -70,43 +87,53 @@
         height: 200px;
         margin-bottom: 20px;
       }
-      h2 {
+      h1 {
         font-size: 24px;
         color: #333;
         margin-bottom: 10px;
       }
-      textarea,
-      input {
+      p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 20px;
+      }
+      input,
+      textarea {
         width: 80%;
-        margin: 10px 0;
         padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
         font-size: 16px;
       }
-      .submit-button {
-        padding: 15px 30px;
-        font-size: 18px;
-        color: white;
-        background-color: #c4a484;
-        border-radius: 25px;
-        border: none;
-        cursor: pointer;
-        margin-top: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      textarea {
+        resize: vertical;
       }
-      .submit-button:hover {
+      button {
+        background-color: #c4a484;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button:hover {
         background-color: #b59476;
       }
     </style>
   </head>
   <body>
-    <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo" />
-    <h2>Thank you for your feedback!</h2>
+    <img src="https://i.imgur.com/qfTW5j0.png" alt="Milea Estate Vineyard Logo">
+    <h1>Thank you for your feedback!</h1>
     <p>Please let us know about your experience below.</p>
-    <form onsubmit="event.preventDefault(); submitFeedback('Kaiya', 2);">
-      <input id="name" type="text" placeholder="Your Name" required />
-      <input id="email" type="email" placeholder="Your Email" required />
-      <textarea id="comment" placeholder="Your Comments" required></textarea>
-      <button type="submit" class="submit-button">Submit</button>
+    <form onsubmit="event.preventDefault(); submitFeedback();">
+      <input type="hidden" id="employee">
+      <input type="hidden" id="stars">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="comment" placeholder="Your Comments" rows="4" required></textarea>
+      <button type="submit">Submit</button>
     </form>
   </body>
 </html>
