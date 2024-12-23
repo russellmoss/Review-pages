@@ -3,8 +3,8 @@
   <head>
     <title>Rate Your Experience</title>
     <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script>
       // Firebase Configuration
       const firebaseConfig = {
@@ -22,6 +22,7 @@
       window.onload = () => {
         const app = firebase.initializeApp(firebaseConfig);
         database = firebase.database();
+        console.log("Firebase initialized.");
       };
 
       let selectedStars = 0;
