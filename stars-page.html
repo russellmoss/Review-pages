@@ -2,10 +2,11 @@
 <html>
   <head>
     <title>Rate Your Experience</title>
+    <!-- Firebase CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
     <script>
-      // Your Firebase Configuration
+      // Firebase Configuration
       const firebaseConfig = {
         apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
         authDomain: "review-logging-cbecd.firebaseapp.com",
@@ -17,72 +18,77 @@
       };
 
       // Initialize Firebase
-      const app = firebase.initializeApp(firebaseConfig);
-      const database = firebase.database();
+      let database;
+      window.onload = () => {
+        const app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+      };
 
       let selectedStars = 0;
 
-      // Test Firebase connection
-      function testFirebase() {
-        const testRef = database.ref("test");
-        testRef.set({ message: "Firebase is connected!" }).then(() => {
-          alert("Firebase is working!");
-        }).catch((error) => {
-          console.error("Error testing Firebase:", error);
-          alert("Firebase connection failed. Check console for errors.");
-        });
-      }
-
-      // Highlight stars and capture the rating
+      // Highlight stars up to the clicked one
       function highlightStars(starIndex) {
-        const stars = document.querySelectorAll(".star");
+        const stars = document.querySelectorAll('.star');
         stars.forEach((star, index) => {
           if (index < starIndex) {
-            star.classList.add("filled");
+            star.classList.add('filled');
           } else {
-            star.classList.remove("filled");
+            star.classList.remove('filled');
           }
         });
         selectedStars = starIndex;
       }
 
-      // Submit the star rating
-      function submitRating() {
+      // Submit rating
+      function submitRating(employee) {
         if (selectedStars === 0) {
           alert("Please select a star rating before submitting.");
           return;
         }
 
-        const employee = new URLSearchParams(window.location.search).get("employee") || "Unknown";
-        const timestamp = new Date().toISOString();
-
         // Log to Firebase
-        const reviewRef = database.ref("reviews").push();
-        reviewRef
-          .set({
-            employee,
-            stars: selectedStars,
-            timestamp
-          })
+        const logEntry = {
+          employee: employee,
+          stars: selectedStars,
+          timestamp: new Date().toISOString()
+        };
+
+        database
+          .ref('ratings')
+          .push(logEntry)
           .then(() => {
-            // Redirect based on stars
             if (selectedStars <= 3) {
-              window.location.href = "https://russellmoss.github.io/Review-pages/feedback-page.html";
+              // Redirect to Feedback Page
+              window.location.href = `https://russellmoss.github.io/Review-pages/feedback-page.html?employee=${encodeURIComponent(
+                employee
+              )}&stars=${selectedStars}`;
             } else {
-              window.location.href = "https://russellmoss.github.io/Review-pages/thank-you-page.html";
+              // Redirect to Thank You Page
+              window.location.href = `https://russellmoss.github.io/Review-pages/Thank-you-page.html?employee=${encodeURIComponent(
+                employee
+              )}&stars=${selectedStars}`;
             }
           })
           .catch((error) => {
-            console.error("Error saving to Firebase:", error);
-            alert("An error occurred while submitting your review.");
+            console.error("Error logging rating:", error);
+            alert("Failed to submit your rating. Please try again.");
           });
+      }
+
+      // Test Firebase connection
+      function testFirebase() {
+        database
+          .ref('test')
+          .push({ message: 'Firebase connection test', timestamp: new Date().toISOString() })
+          .then(() => alert("Firebase connection is working!"))
+          .catch((error) => console.error("Firebase connection test failed:", error));
       }
     </script>
     <style>
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        background-color: #f5e6d3;
+        background-color: #f5e6d3; /* Beige background */
         padding: 20px;
       }
       img {
@@ -104,10 +110,10 @@
       .star {
         font-size: 50px;
         cursor: pointer;
-        color: #ccc;
+        color: #ccc; /* Gray for empty stars */
       }
       .star.filled {
-        color: #ffc107;
+        color: #ffc107; /* Yellow for filled stars */
       }
       .submit-button {
         padding: 15px 30px;
@@ -115,19 +121,24 @@
         color: white;
         background-color: #c4a484;
         border-radius: 25px;
+        border: none;
         cursor: pointer;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       }
       .submit-button:hover {
         background-color: #b59476;
       }
       .test-button {
-        margin-top: 20px;
         padding: 10px 20px;
-        background-color: #4285f4;
+        font-size: 14px;
         color: white;
+        background-color: #4285f4;
+        border-radius: 15px;
         border: none;
-        border-radius: 5px;
         cursor: pointer;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
       .test-button:hover {
         background-color: #357ae8;
@@ -135,7 +146,7 @@
     </style>
   </head>
   <body>
-    <img src="https://i.imgur.com/qfTW5j0.png" alt="Your Logo">
+    <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo" />
     <h2>Rate Your Experience</h2>
     <div class="stars">
       <span class="star" onclick="highlightStars(1)">★</span>
@@ -144,7 +155,8 @@
       <span class="star" onclick="highlightStars(4)">★</span>
       <span class="star" onclick="highlightStars(5)">★</span>
     </div>
-    <button class="submit-button" onclick="submitRating()">Submit</button>
+    <button class="submit-button" onclick="submitRating('Kaiya')">Submit</button>
+    <br />
     <button class="test-button" onclick="testFirebase()">Test Firebase</button>
   </body>
 </html>
