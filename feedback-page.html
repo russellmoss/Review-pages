@@ -1,60 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Feedback Form</title>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5e6d3;
+      padding: 20px;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .submit-button {
+      padding: 15px 30px;
+      font-size: 18px;
+      color: white;
+      background-color: #c4a484;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+    .submit-button:hover {
+      background-color: #b59476;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://i.imgur.com/qfTW5j0.png" alt="Milea Estate Vineyard Logo">
+  <h2>Thank you for your feedback!</h2>
+  <p>Please let us know about your experience below.</p>
+  <form id="feedbackForm">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+    <textarea id="comment" rows="5" placeholder="Your Comments" required></textarea>
+    <button type="button" class="submit-button" onclick="submitFeedback()">Submit</button>
+  </form>
+
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
   <script>
+    // Initialize Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
       authDomain: "review-logging-cbecd.firebaseapp.com",
       databaseURL: "https://review-logging-cbecd-default-rtdb.firebaseio.com",
       projectId: "review-logging-cbecd",
-      storageBucket: "review-logging-cbecd.firebasestorage.app",
+      storageBucket: "review-logging-cbecd.appspot.com",
       messagingSenderId: "159382094438",
       appId: "1:159382094438:web:7ab0e64549901c604363a7"
     };
-
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    // Submit Feedback
     function submitFeedback() {
       const urlParams = new URLSearchParams(window.location.search);
-      const employee = urlParams.get('employee') || 'Unknown';
-      const stars = urlParams.get('stars') || 'Unknown';
-
+      const employee = urlParams.get('employee') || "Unknown";
+      const stars = urlParams.get('stars') || "Unknown";
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const comment = document.getElementById('comment').value;
 
-      database.ref('feedback').push({
-        employee,
-        stars,
-        name,
-        email,
-        comment,
-        timestamp: new Date().toISOString()
+      if (!name || !email || !comment) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const timestamp = new Date().toISOString();
+
+      // Log feedback to Firebase
+      firebase.database().ref("reviews").push({
+        employee: employee,
+        stars: stars,
+        name: name,
+        email: email,
+        comment: comment,
+        timestamp: timestamp
+      }).then(() => {
+        alert("Thank you for your feedback!");
+      }).catch((error) => {
+        console.error("Error logging feedback:", error);
+        alert("There was an error submitting your feedback. Please try again.");
       });
 
-      alert("Thank you for your feedback!");
+      // Optionally clear form fields
+      document.getElementById('feedbackForm').reset();
     }
   </script>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f5e6d3; padding: 20px; }
-    img { width: 200px; height: 200px; margin-bottom: 20px; }
-    input, textarea { width: 80%; padding: 10px; margin: 10px 0; border-radius: 5px; }
-    button { padding: 10px 20px; border-radius: 20px; background-color: #c4a484; color: white; }
-    button:hover { background-color: #b59476; }
-  </style>
-</head>
-<body>
-  <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo">
-  <h1>Feedback</h1>
-  <form onsubmit="event.preventDefault(); submitFeedback();">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="email" id="email" placeholder="Your Email" required>
-    <textarea id="comment" placeholder="Your Comments" required></textarea>
-    <button type="submit">Submit</button>
-  </form>
 </body>
 </html>
