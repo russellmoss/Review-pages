@@ -20,14 +20,17 @@
       // Initialize Firebase
       let database;
       window.onload = () => {
-        const app = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("Firebase initialized.");
+        try {
+          const app = firebase.initializeApp(firebaseConfig);
+          database = firebase.database();
+          console.log("Firebase initialized.");
+        } catch (error) {
+          console.error("Firebase initialization error:", error);
+        }
       };
 
       let selectedStars = 0;
 
-      // Highlight stars up to the clicked one
       function highlightStars(starIndex) {
         const stars = document.querySelectorAll('.star');
         stars.forEach((star, index) => {
@@ -40,14 +43,12 @@
         selectedStars = starIndex;
       }
 
-      // Submit rating
       function submitRating(employee) {
         if (selectedStars === 0) {
           alert("Please select a star rating before submitting.");
           return;
         }
 
-        // Log to Firebase
         const logEntry = {
           employee: employee,
           stars: selectedStars,
@@ -59,10 +60,61 @@
           .push(logEntry)
           .then(() => {
             if (selectedStars <= 3) {
-              // Redirect to Feedback Page
-              window.location.href = `https://russellmoss.github.io/Review-pages/feedback-page.html?employee=${encodeURIComponent(
-                employee
-              )}&stars=${selectedStars}`;
+              window.location.href = `https://russellmoss.github.io/Review-pages/feedback-page.html?employee=${encodeURIComponent(employee)}&stars=${selectedStars}`;
             } else {
-              // Redirect to Thank You Page
-              window.location.href = `https://russellmoss.github.i
+              window.location.href = `https://russellmoss.github.io/Review-pages/thank-you-page.html?employee=${encodeURIComponent(employee)}&stars=${selectedStars}`;
+            }
+          })
+          .catch((error) => {
+            console.error("Error logging to Firebase:", error);
+          });
+      }
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f5e6d3;
+        margin: 0;
+        padding: 20px;
+      }
+      .stars {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+      .star {
+        font-size: 50px;
+        cursor: pointer;
+        color: #ccc;
+      }
+      .star.filled {
+        color: #ffc107;
+      }
+      button {
+        background-color: #c4a484;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #b59476;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Rate Your Experience</h1>
+    <div class="stars">
+      <span class="star" onclick="highlightStars(1)">★</span>
+      <span class="star" onclick="highlightStars(2)">★</span>
+      <span class="star" onclick="highlightStars(3)">★</span>
+      <span class="star" onclick="highlightStars(4)">★</span>
+      <span class="star" onclick="highlightStars(5)">★</span>
+    </div>
+    <button onclick="submitRating('Kaiya')">Submit</button>
+  </body>
+</html>
