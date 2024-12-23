@@ -19,6 +19,9 @@
         margin: 10px 0;
         padding: 10px;
         font-size: 16px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
       }
       .submit-button {
         padding: 15px 30px;
@@ -51,8 +54,11 @@
       };
 
       // Initialize Firebase
-      const app = firebase.initializeApp(firebaseConfig);
-      const database = firebase.database(app);
+      let app, database;
+      window.onload = () => {
+        app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database(app);
+      };
 
       // Handle Feedback Submission
       function submitFeedback() {
@@ -71,21 +77,22 @@
 
         // Log to Firebase
         const feedbackRef = database.ref("reviews");
-        feedbackRef.push({
-          employee: employee,
-          stars: stars,
-          timestamp: timestamp,
-          name: name,
-          email: email,
-          comment: comment
-        })
-        .then(() => {
-          alert("Thank you for your feedback!");
-        })
-        .catch((error) => {
-          console.error("Error submitting feedback:", error);
-          alert("An error occurred. Please try again later.");
-        });
+        feedbackRef
+          .push({
+            employee: employee,
+            stars: stars,
+            timestamp: timestamp,
+            name: name,
+            email: email,
+            comment: comment,
+          })
+          .then(() => {
+            alert("Thank you for your feedback!");
+          })
+          .catch((error) => {
+            console.error("Error submitting feedback:", error);
+            alert("An error occurred. Please try again later.");
+          });
       }
     </script>
   </head>
