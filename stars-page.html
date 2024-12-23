@@ -103,7 +103,7 @@
 
       // Log to Firebase
       const timestamp = new Date().toISOString();
-      firebase.database().ref("reviews").push({
+      database.ref("reviews").push({
         employee: employee,
         stars: selectedStars,
         timestamp: timestamp
