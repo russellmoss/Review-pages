@@ -1,10 +1,45 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Feedback Form</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <title>Feedback Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f5e6d3; /* Beige background */
+        padding: 20px;
+      }
+      img {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 20px;
+      }
+      input, textarea {
+        width: 80%;
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+      }
+      .submit-button {
+        padding: 15px 30px;
+        font-size: 18px;
+        color: white;
+        background-color: #c4a484; /* Beige button */
+        border-radius: 25px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+      }
+      .submit-button:hover {
+        background-color: #b59476; /* Darker beige */
+      }
+    </style>
     <script>
+      // Import Firebase
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
       // Firebase Configuration
       const firebaseConfig = {
         apiKey: "AIzaSyADopiZcom9_2dEP_O8rImKCqzsXBsAx8I",
@@ -17,92 +52,49 @@
       };
 
       // Initialize Firebase
-      let database;
-      window.onload = () => {
-        const app = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("Firebase initialized.");
-      };
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
 
-      // Submit feedback
+      // Handle Form Submission
       function submitFeedback() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const employee = urlParams.get("employee") || "Unknown";
-        const stars = urlParams.get("stars") || "Unknown";
-
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const comment = document.getElementById("comment").value;
+        const employee = new URLSearchParams(window.location.search).get("employee");
+        const stars = new URLSearchParams(window.location.search).get("stars");
+        const timestamp = new Date().toISOString();
 
         if (!name || !email || !comment) {
           alert("Please fill out all fields.");
           return;
         }
 
-        const feedbackData = {
-          employee: employee,
-          stars: stars,
+        // Log to Firebase
+        const feedbackRef = ref(database, "reviews");
+        push(feedbackRef, {
+          employee: employee || "Unknown",
+          stars: stars || "Unknown",
+          timestamp: timestamp,
           name: name,
           email: email,
-          comment: comment,
-          timestamp: new Date().toISOString()
-        };
-
-        database
-          .ref("feedback")
-          .push(feedbackData)
-          .then(() => {
-            alert("Thank you for your feedback!");
-            window.location.href = "https://russellmoss.github.io/Review-pages/Thank-you-page.html";
-          })
-          .catch((error) => {
-            console.error("Error submitting feedback:", error);
-            alert("Failed to submit your feedback. Please try again.");
-          });
+          comment: comment
+        }).then(() => {
+          alert("Thank you for your feedback!");
+          window.location.href = "/thank-you.html"; // Redirect to Thank-You Page (Optional)
+        }).catch((error) => {
+          console.error("Error logging feedback:", error);
+          alert("An error occurred. Please try again later.");
+        });
       }
     </script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background-color: #f5e6d3;
-        padding: 20px;
-      }
-      img {
-        width: 200px;
-        height: 200px;
-        margin-bottom: 20px;
-      }
-      textarea, input {
-        width: 80%;
-        margin: 10px 0;
-        padding: 10px;
-        font-size: 16px;
-      }
-      .submit-button {
-        padding: 15px 30px;
-        font-size: 18px;
-        color: white;
-        background-color: #c4a484;
-        border-radius: 25px;
-        border: none;
-        cursor: pointer;
-        margin-top: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      }
-      .submit-button:hover {
-        background-color: #b59476;
-      }
-    </style>
   </head>
   <body>
-    <img src="https://i.imgur.com/qfTW5j0.png" alt="Logo" />
-    <h2>Thank you for sharing your feedback!</h2>
-    <p>We value your insights and would like to learn more about your experience.</p>
-    <p>Please fill out the form below:</p>
+    <img src="https://i.imgur.com/qfTW5j0.png" alt="Your Logo">
+    <h2>Thank you for your feedback!</h2>
+    <p>Please let us know about your experience below.</p>
+    <input id="name" type="text" placeholder="Your Name">
+    <input id="email" type="email" placeholder="Your Email">
     <textarea id="comment" placeholder="Your Comments"></textarea>
-    <input id="name" type="text" placeholder="Your Name" />
-    <input id="email" type="email" placeholder="Your Email" />
     <button class="submit-button" onclick="submitFeedback()">Submit</button>
   </body>
 </html>
